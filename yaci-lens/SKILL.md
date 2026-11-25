@@ -37,14 +37,18 @@ USE lake;
    the catalog has per-file min/max statistics.
 2. **History-wide questions: use the summary pack first.** These are one small file each, rebuilt daily:
    `epochs` (per-epoch activity, ada pots, active stake), `daily` (per-day txs, fees, script txs, mints),
-   `latest_blocks`, `pools`, `governance`, `dreps`, `script_index`, `about`. Read them with
+   `staking_daily` (certificates, delegations, withdrawals per day), `staking_epochs` (rewards by type, Nakamoto
+   coefficient, top-10/100 share), `drep_epochs` (DRep vs Abstain vs No-confidence power), `latest_blocks`,
+   `pools`, `governance`, `dreps`, `pool_meta` / `drep_meta` / `action_meta` (hash-checked off-chain metadata:
+   pool ticker and name, DRep name and profile, proposal title and texts), `script_index`, `tx_index`, `about`. Read them with
    `FROM read_parquet(getvariable('summary') || 'epochs.parquet')`. Their amounts are ADA as `DOUBLE`.
 3. **Amounts in lake tables are lovelace** (exact `DECIMAL(38,0)` or `BIGINT`). Divide by 1e6 for ADA.
 4. **Lookups by hash need a day.** `transaction`, `address_utxo`, `tx_input`, `datum` and `script` are partitioned by
    day, and hashes are random, so a hash alone means scanning every day. Find the day first:
+   - For a transaction hash: the **tx index** (see `reference/cookbook.md`, "Find a transaction by hash"). This is
+     also how to resolve an input (`tx_hash#index`): its output is in `address_utxo` on the day its tx was made.
    - From a block number: `SELECT date FROM block WHERE number = N` (fast).
    - For a script hash: `script_index` in the summary pack gives the day of its `script` partition.
-   - Otherwise ask the user for the date, or scan a small date range. There is no tx-hash index yet.
 5. **Stake snapshots:** `epoch_stake.epoch` is the epoch the snapshot was taken. That stake is active in
    `active_epoch` = epoch + 2. "Active stake in epoch E" is `WHERE epoch = E - 2`.
 6. **Identifiers:** pool ids are hex key hashes (`block.slot_leader`, `epoch_stake.pool_id`), not `pool1…` bech32.
@@ -54,8 +58,8 @@ USE lake;
    `adapot` already has a row for the current epoch.
 8. **Ada pots are taken at the epoch boundary.** `adapot` (and `treasury_ada` / `reserves_ada` in `epochs`) for
    epoch E is the value at the start of E (`adapot.slot` is the boundary slot).
-9. **Pools have no names in the lake.** Tickers live in off-chain metadata (`pools.parquet` has `metadata_url`).
-   To show `pool1…` ids, bech32-encode the hex hash with hrp `pool`, e.g.
+9. **Pool names** come from `pool_meta` (ticker, name; use rows with `fetched AND hash_ok`). DRep names from
+   `drep_meta.given_name`, proposal titles from `action_meta.title`. These are self-declared. To show `pool1…` ids, bech32-encode the hex hash with hrp `pool`, e.g.
    `python3 -c "import sys;from bech32 import bech32_encode,convertbits;print(bech32_encode('pool',convertbits(bytes.fromhex(sys.argv[1]),8,5)))" <hex>`
    (`pip install bech32`), or show the hex.
 10. Address-wide history (all activity of one address since genesis) has no index: say so, and offer a date range.

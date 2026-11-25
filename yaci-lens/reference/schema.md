@@ -296,9 +296,37 @@ Columns: `tx_hash VARCHAR`, `idx INTEGER`, `type VARCHAR`, `deposit_ada DOUBLE`,
 
 Columns: `epoch INTEGER`, `drep_hash VARCHAR`, `drep_id VARCHAR`, `drep_type VARCHAR`, `voting_power_ada DOUBLE`, `active_until INTEGER`, `expiry INTEGER`, `status VARCHAR`
 
+## `staking_daily`
+
+Columns: `date DATE`, `stake_registrations BIGINT`, `stake_deregistrations BIGINT`, `delegations BIGINT`, `vote_delegations BIGINT`, `withdrawals BIGINT`, `withdrawn_ada DOUBLE`, `pool_registrations BIGINT`, `pool_updates BIGINT`, `pool_retirements BIGINT`, `drep_registrations BIGINT`, `drep_updates BIGINT`, `drep_retirements BIGINT`
+
+## `staking_epochs`
+
+Columns: `epoch INTEGER`, `member_rewards_ada DOUBLE`, `leader_rewards_ada DOUBLE`, `other_rewards_ada DOUBLE`, `rewarded_addresses BIGINT`, `pools_with_stake BIGINT`, `nakamoto BIGINT`, `top10_share DOUBLE`, `top100_share DOUBLE`
+
+## `drep_epochs`
+
+Columns: `epoch INTEGER`, `total_power_ada DOUBLE`, `drep_power_ada DOUBLE`, `abstain_ada DOUBLE`, `no_confidence_ada DOUBLE`, `dreps_with_power BIGINT`
+
+## `pool_meta`
+
+Columns: `pool_hash VARCHAR`, `url VARCHAR`, `fetched BOOLEAN`, `hash_ok BOOLEAN`, `error VARCHAR`, `ticker VARCHAR`, `name VARCHAR`, `description VARCHAR`, `homepage VARCHAR`
+
+## `drep_meta`
+
+Columns: `drep_hash VARCHAR`, `drep_id VARCHAR`, `url VARCHAR`, `fetched BOOLEAN`, `hash_ok BOOLEAN`, `error VARCHAR`, `given_name VARCHAR`, `objectives VARCHAR`, `motivations VARCHAR`, `qualifications VARCHAR`, `image VARCHAR`
+
+## `action_meta`
+
+Columns: `tx_hash VARCHAR`, `idx VARCHAR`, `url VARCHAR`, `fetched BOOLEAN`, `hash_ok BOOLEAN`, `error VARCHAR`, `title VARCHAR`, `abstract VARCHAR`, `motivation VARCHAR`, `rationale VARCHAR`
+
 ## `script_index`
 
 Columns: `script_hash VARCHAR`, `date DATE`, `script_type VARCHAR`
+
+## `tx_index`
+
+Columns: `kind VARCHAR`, `file VARCHAR`, `from_date DATE`, `to_date DATE`
 
 ## `about`
 

@@ -37,6 +37,19 @@ GROUP BY 1 ORDER BY 1;
 ## Blocks and transactions
 
 ```sql
+-- Find a transaction by hash (about 6 s). The tx index maps the first 8 bytes of the hash to the UTC day;
+-- summary/tx_index.parquet names the current index files.
+SET VARIABLE tx_index = (SELECT list('https://data.bloxbean.org/mainnet/v1/index/' || file)
+                         FROM read_parquet(getvariable('summary') || 'tx_index.parquet'));
+SET VARIABLE tx_day = (SELECT max(date) FROM read_parquet(getvariable('tx_index'))
+                       WHERE k = ('0x' || left('8662b5e621d183682ba855c6291f72350ef0b8dacc7e7b3e4b0d9a936569bd1c', 16))::UBIGINT);
+SELECT tx_hash, block, date, fee FROM transaction
+WHERE date = getvariable('tx_day') AND tx_hash = '8662b5e621d183682ba855c6291f72350ef0b8dacc7e7b3e4b0d9a936569bd1c';
+```
+The same lookup resolves an input `tx_hash#index`: find its tx's day, then read `address_utxo` on that day with
+`tx_hash = … AND output_index = …`. (A key can in theory map to two days; checking the full hash settles it.)
+
+```sql
 -- A block by number (pruned by column stats, about 0.5 s)
 SELECT number, hash, slot, epoch, block_time, no_of_txs, total_fees, body_size, slot_leader AS pool_hash, date
 FROM block WHERE number = 14240057;
@@ -129,6 +142,17 @@ SELECT slot_leader AS pool_hash, count(*) AS blocks FROM block
 WHERE epoch = 668 GROUP BY 1 ORDER BY blocks DESC LIMIT 20;
 ```
 
+## Names (off-chain metadata, hash-checked)
+
+```sql
+-- Largest pools with ticker and name
+SELECT m.ticker, m.name, round(p.active_stake_ada / 1e6, 1) AS stake_m_ada, p.delegators
+FROM read_parquet(getvariable('summary') || 'pools.parquet') p
+LEFT JOIN read_parquet(getvariable('summary') || 'pool_meta.parquet') m
+  ON m.pool_hash = p.pool_hash AND m.fetched AND m.hash_ok
+ORDER BY p.active_stake_ada DESC LIMIT 20;
+```
+
 ## Governance
 
 ```sql
@@ -150,6 +174,13 @@ GROUP BY ALL ORDER BY votes DESC;
 SELECT coalesce(drep_id, drep_type) AS drep, round(voting_power_ada / 1e6, 2) AS power_m_ada, status
 FROM read_parquet(getvariable('summary') || 'dreps.parquet')
 ORDER BY voting_power_ada DESC LIMIT 20;
+```
+
+```sql
+-- Decentralisation and rewards per epoch
+SELECT epoch, nakamoto, round(top10_share * 100, 1) AS top10_pct, pools_with_stake,
+       round(member_rewards_ada + leader_rewards_ada) AS rewards_ada
+FROM read_parquet(getvariable('summary') || 'staking_epochs.parquet') ORDER BY epoch DESC LIMIT 10;
 ```
 
 ## Scripts, tokens and metadata

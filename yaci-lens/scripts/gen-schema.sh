@@ -38,7 +38,7 @@ for row in csv.DictReader(sys.stdin):
   echo "Small precomputed tables, one Parquet file each, rebuilt daily. Read them with"
   echo "\`FROM '<summary-url><name>.parquet'\` (\`getvariable('summary')\` holds the folder URL). Amounts are ADA (DOUBLE)."
   echo
-  for name in epochs daily latest_blocks pools governance dreps script_index about; do
+  for name in epochs daily latest_blocks pools governance dreps staking_daily staking_epochs drep_epochs pool_meta drep_meta action_meta script_index tx_index about; do
     echo "## \`$name\`"
     echo
     printf 'Columns: '
