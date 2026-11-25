@@ -50,8 +50,15 @@ USE lake;
 6. **Identifiers:** pool ids are hex key hashes (`block.slot_leader`, `epoch_stake.pool_id`), not `pool1…` bech32.
    Stake addresses are bech32 (`stake1…`). DRep ids in `drep_dist`/`dreps` are bech32 (`drep1…`).
 7. **Dates and times are UTC.** `date` is the UTC day of the block. The current epoch is partial; the newest
-   complete epoch is `tip_epoch - 1`.
-8. Address-wide history (all activity of one address since genesis) has no index: say so, and offer a date range.
+   complete epoch is `tip_epoch - 1`. The `epochs` summary (and the `epoch` table) has complete epochs only, while
+   `adapot` already has a row for the current epoch.
+8. **Ada pots are taken at the epoch boundary.** `adapot` (and `treasury_ada` / `reserves_ada` in `epochs`) for
+   epoch E is the value at the start of E (`adapot.slot` is the boundary slot).
+9. **Pools have no names in the lake.** Tickers live in off-chain metadata (`pools.parquet` has `metadata_url`).
+   To show `pool1…` ids, bech32-encode the hex hash with hrp `pool`, e.g.
+   `python3 -c "import sys;from bech32 import bech32_encode,convertbits;print(bech32_encode('pool',convertbits(bytes.fromhex(sys.argv[1]),8,5)))" <hex>`
+   (`pip install bech32`), or show the hex.
+10. Address-wide history (all activity of one address since genesis) has no index: say so, and offer a date range.
 
 ## Reading the answer back
 

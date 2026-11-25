@@ -20,9 +20,9 @@ ORDER BY date DESC LIMIT 30;
 ```
 
 ```sql
--- Ada pots and active stake per epoch
-SELECT epoch, round(treasury_ada / 1e6, 1) AS treasury_m, round(reserves_ada / 1e9, 2) AS reserves_bn,
-       round(active_stake_ada / 1e9, 2) AS active_stake_bn, pools, delegators, txs, round(fees_ada) AS fees_ada
+-- Ada pots (at the start of each epoch) and active stake per complete epoch. Amounts here are already ADA.
+SELECT epoch, round(treasury_ada / 1e6, 1) AS treasury_million_ada, round(reserves_ada / 1e9, 2) AS reserves_billion_ada,
+       round(active_stake_ada / 1e9, 2) AS active_stake_billion_ada, pools, delegators, txs, round(fees_ada) AS fees_ada
 FROM read_parquet(getvariable('summary') || 'epochs.parquet')
 ORDER BY epoch DESC LIMIT 10;
 ```
