@@ -5,7 +5,7 @@ An agent skill for querying **Cardano mainnet data with SQL**, over the public Y
 daily to Cloudflare R2. There's no server, API key or account: the agent runs DuckDB locally, and DuckDB reads only the
 parts of the remote files a query needs.
 
-The same data powers [Yaci Lens](../yaci-lens), the serverless Cardano explorer.
+The same data powers [Yaci Lens](https://github.com/bloxbean/yaci-lens), the serverless Cardano analytics explorer.
 
 ```
 yaci-lens/
