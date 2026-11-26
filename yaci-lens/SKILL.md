@@ -40,8 +40,15 @@ USE lake;
    `staking_daily` (certificates, delegations, withdrawals per day), `staking_epochs` (rewards by type, Nakamoto
    coefficient, top-10/100 share), `drep_epochs` (DRep vs Abstain vs No-confidence power), `latest_blocks`,
    `pools`, `governance`, `dreps`, `pool_meta` / `drep_meta` / `action_meta` (hash-checked off-chain metadata:
-   pool ticker and name, DRep name and profile, proposal title and texts), `script_index`, `tx_index`, `about`. Read them with
-   `FROM read_parquet(getvariable('summary') || 'epochs.parquet')`. Their amounts are ADA as `DOUBLE`.
+   pool ticker and name, DRep name and profile, proposal title and texts), `script_index`, `tx_index`, `about`.
+   Governance: `votes` (every vote; the latest per voter and action counts), `drep_power` (each DRep's power per
+   epoch). Smart contracts: `script_daily` (per day and Plutus script: txs, redeemers, fees of those txs, execution
+   units, purposes), `script_totals`, `script_names` (dApp labels from the Strica and CRFA registries; join on
+   `script_hash`). Native assets: `asset_tokens` (fungible tokens with decoded `name`, supply, 30-day policy
+   activity), `asset_policies`, `asset_mint_daily`, `asset_daily` and `token_daily` (last 365 days of token
+   transactions), `asset_index` (names the index files under `index/` for lookups of any asset by unit or
+   fingerprint). Read them with `FROM read_parquet(getvariable('summary') || 'epochs.parquet')`. Their amounts are
+   ADA as `DOUBLE`; `script_daily` counts a transaction's fee once for each script it ran.
 3. **Amounts in lake tables are lovelace** (exact `DECIMAL(38,0)` or `BIGINT`). Divide by 1e6 for ADA.
 4. **Lookups by hash need a day.** `transaction`, `address_utxo`, `tx_input`, `datum` and `script` are partitioned by
    day, and hashes are random, so a hash alone means scanning every day. Find the day first:
