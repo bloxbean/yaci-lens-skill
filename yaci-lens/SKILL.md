@@ -47,7 +47,9 @@ USE lake;
    `script_hash`). Native assets: `asset_tokens` (fungible tokens with decoded `name`, supply, 30-day policy
    activity), `asset_policies`, `asset_mint_daily`, `asset_daily` and `token_daily` (last 365 days of token
    transactions), `asset_index` (names the index files under `index/` for lookups of any asset by unit or
-   fingerprint). Read them with `FROM read_parquet(getvariable('summary') || 'epochs.parquet')`. Their amounts are
+   fingerprint). Whales: `whales` (the 1,000 largest stake accounts by ADA in UTxOs under the stake key, delegating
+   or not, with share, pool, DRep, unwithdrawn rewards, 1/7/30-day change and activity), `whale_daily` (their
+   balance on each of the last 90 days), `whale_stats` (totals and holdings bands). Read them with `FROM read_parquet(getvariable('summary') || 'epochs.parquet')`. Their amounts are
    ADA as `DOUBLE`; `script_daily` counts a transaction's fee once for each script it ran.
 3. **Amounts in lake tables are lovelace** (exact `DECIMAL(38,0)` or `BIGINT`). Divide by 1e6 for ADA.
 4. **Lookups by hash need a day.** `transaction`, `address_utxo`, `tx_input`, `datum` and `script` are partitioned by

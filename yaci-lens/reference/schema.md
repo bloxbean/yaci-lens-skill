@@ -368,6 +368,18 @@ Columns: `date DATE`, `token_txs BIGINT`, `active_policies BIGINT`
 
 Columns: `lookup VARCHAR`, `kind VARCHAR`, `file VARCHAR`
 
+## `whales`
+
+Columns: `rank INTEGER`, `address VARCHAR`, `balance_ada DOUBLE`, `share DOUBLE`, `rewards_ada DOUBLE`, `pool_id VARCHAR`, `live_stake_ada DOUBLE`, `drep VARCHAR`, `drep_hash VARCHAR`, `last_change DATE`, `first_seen DATE`, `change_1d_ada DOUBLE`, `change_7d_ada DOUBLE`, `change_30d_ada DOUBLE`, `changes_30d BIGINT`, `active_days_30d BIGINT`
+
+## `whale_daily`
+
+Columns: `date DATE`, `address VARCHAR`, `balance_ada DOUBLE`
+
+## `whale_stats`
+
+Columns: `date DATE`, `accounts BIGINT`, `total_ada DOUBLE`, `top10_ada DOUBLE`, `top100_ada DOUBLE`, `top1000_ada DOUBLE`, `n_1k BIGINT`, `n_10k BIGINT`, `n_100k BIGINT`, `n_1m BIGINT`, `n_10m BIGINT`, `n_100m BIGINT`
+
 ## `tx_index`
 
 Columns: `kind VARCHAR`, `file VARCHAR`, `from_date DATE`, `to_date DATE`
